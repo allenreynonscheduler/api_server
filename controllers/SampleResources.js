@@ -1,20 +1,20 @@
-exports.index = (req, res) => {
+exports.index = async (req, res) => {
     res.json({ message: "Get all users" });
 };
 
-exports.store = (req, res) => {
+exports.store = async (req, res) => {
     res.json({ message: "Create a new user" });
 };
 
-exports.show = (req, res) => {
+exports.show = async (req, res) => {
     res.json({ message: `Get user with ID ${req.params.id}` });
 };
 
-exports.update = (req, res) => {
+exports.update = async (req, res) => {
     res.json({ message: `Update user with ID ${req.params.id}` });
 };
 
-exports.destroy = (req, res) => {
+exports.destroy = async (req, res) => {
     res.json({ message: `Delete user with ID ${req.params.id}` });
 };
 

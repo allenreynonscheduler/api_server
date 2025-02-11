@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 exports.testapi = async (req, res) => {
-    res.status(200).json("HELLO");
+    res.status(200).json("HELLOS");
 };
 
 exports.register = async (req, res) => {

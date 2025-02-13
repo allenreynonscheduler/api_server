@@ -33,7 +33,8 @@ exports.store = async (req, res, next) => {
         });
         if(validate){ res.status(400).send(validate); return; }
 
-        const query = new Leagues({ ...req.body, password: 'test' });
+        const { _id, ...newData } = req.body; // Extract everything except _id
+        const query = new Leagues({ ...newData, password: 'test' });
         await query.save();
         res.status(201).json({ message: "Successfully created." });
     } catch (error) {

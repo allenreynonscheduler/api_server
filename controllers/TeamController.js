@@ -1,22 +1,21 @@
-const Leagues = require("../models/Leagues");
+const Team = require("../models/Team");
 const validator = require("../helper/validator");
 
 exports.index = async (req, res) => {
     try {
         const { page = 1, limit = 10 } = req.query;
-
-        const leagues = await Leagues.find({ status: 1 })
+        const team = await Team.find()
             .skip((page - 1) * limit)
             .limit(parseInt(limit));
 
-        const total = await Leagues.countDocuments({ status: 1 });
-
+        const total = await Team.countDocuments({ status: 1 });
+    
         res.status(200).json({
             total,
             page: parseInt(page),
             limit: parseInt(limit),
             totalPages: Math.ceil(total / limit),
-            data: leagues.sort((a, b) => b.createdAt - a.createdAt)
+            data: team.sort((a, b) => b.createdAt - a.createdAt)
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -25,16 +24,23 @@ exports.index = async (req, res) => {
 
 exports.store = async (req, res, next) => {
     try {
-
         let validate = validator(req, res, next, {
             'name': 'required|string',
             'abbreviation': 'required|string',
-            'description': 'required|string'
+            'conference_id': 'required|string',
+            'division_id': 'required|string',
+            'teammanager': 'required|string',
+            'teammanager_email': 'required|string',
+            'alternatemanager_name': 'required|string',
+            'alternatemanager_email': 'required|string',
+            'address': 'required|string',
+            'description': 'required|string',
+            // 'status': 'required|string',
         });
         if(validate){ res.status(400).send(validate); return; }
 
         const { _id, ...newData } = req.body; // Extract everything except _id
-        const query = new Leagues({ ...newData, password: 'test' });
+        const query = new Team({ ...newData, password: 'test' });
         await query.save();
         res.status(201).json({ message: "Record Successfuly Created" });
     } catch (error) {
@@ -44,11 +50,11 @@ exports.store = async (req, res, next) => {
 
 exports.show = async (req, res, next) => {
     try {
-        const league = await Leagues.findById(req.params.id);
-        if (!league) {
+        const team = await Team.findById(req.params.id);
+        if (!team) {
             return res.status(400).json({ message: "Data not found" });
         }
-        res.status(200).json(league);
+        res.status(200).json(team);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -60,15 +66,22 @@ exports.update = async (req, res, next) => {
         let validate = validator(req, res, next, {
             'name': 'required|string',
             'abbreviation': 'required|string',
-            'description': 'required|string'
+            'conference_id': 'required|string',
+            'division_id': 'required|string',
+            'teammanager': 'required|string',
+            'teammanager_email': 'required|string',
+            'alternatemanager_name': 'required|string',
+            'alternatemanager_email': 'required|string',
+            'address': 'required|string',
+            'description': 'required|string',
         });
         if(validate){ res.status(400).send(validate); return; }
 
-        const league = await Leagues.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!league) {
+        const team = await Team.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!team) {
             return res.status(400).json({ message: "Data not found" });
         }
-        res.status(200).json({ message: "Record Successfuly Updated", league });
+        res.status(200).json({ message: "Record Successfuly Updated", team });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -77,21 +90,11 @@ exports.update = async (req, res, next) => {
 exports.destroy = async (req, res, next) => {
     try {
         // const league = await Leagues.findByIdAndDelete(req.params.id);
-        const league = await Leagues.findByIdAndUpdate(req.params.id, { status: 0 });
-        if (!league) {
+        const team = await Team.deleteOne({ _id: req.params.id });
+        if (!team) {
             return res.status(400).json({ message: "Data not found" });
         }
         res.status(200).json({ message: "Record Successfuly Deleted" });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
-exports.leaguelist = async (req, res) => {
-    try {
-        const leagues = await Leagues.find({ status: 1 });
-        res.status(200).json({
-            data: leagues.sort((a, b) => b.createdAt - a.createdAt)
-        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
